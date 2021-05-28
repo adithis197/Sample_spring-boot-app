@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class MyController {
-
     @Autowired
     private CourseService courseService;
     @GetMapping("/home")
@@ -17,7 +17,6 @@ public class MyController {
         return "This is home";
     }
 
-    //Get courses list
     @GetMapping("/courses")
     public List<Courses> getCourses() {
         return this.courseService.getCourses();
@@ -31,5 +30,5 @@ public class MyController {
     public Courses addCourse(@RequestBody Courses course){
         return this.courseService.addCourse(course);
 
-    }
-}
+    }}
+

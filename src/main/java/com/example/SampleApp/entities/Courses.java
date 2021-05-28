@@ -1,9 +1,14 @@
 package com.example.SampleApp.entities;
 
-public class Courses {
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.*;
+import javax.persistence.SequenceGenerator;
+import java.io.Serializable;
+//@Entity
+public class Courses implements Serializable {
 
-
-    @Override
+ @Override
     public String toString() {
         return "Courses{" +
                 "id=" + id +

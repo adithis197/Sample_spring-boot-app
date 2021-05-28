@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-	//implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	runtimeOnly('org.hsqldb:hsqldb')
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -24,9 +24,16 @@ dependencies {
 			,'javax.servlet:jstl')
 	implementation group: 'javax.persistence', name: 'javax.persistence-api', version: '2.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
-	implementation 'io.springfox:springfox-swagger2:2.9.2'
+    testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
 	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+	implementation group: 'org.springframework.data', name: 'spring-data-redis', version: '2.5.0'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.4.5'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis-reactive', version: '2.5.0'
+	implementation group: 'io.lettuce', name: 'lettuce-core', version: '6.1.1.RELEASE'
+	implementation group: 'redis.clients', name: 'jedis', version: '3.6.0'
+
+
 }
 
 
