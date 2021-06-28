@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-cluster-slave
+spec:
+  serviceName: redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-cluster-slave-lbl
+  template:
+    metadata:
+      name: redis-cluster-slave-p1
+      labels:
+        app: redis-cluster-slave-lbl
+        slave: "true"
+    spec:
+      volumes:
+        - hostPath:
+            path: /mnt/redis-data
+          name: redis-directory-binding
+
+      restartPolicy: Always
+
+      containers:
+      - name: redis-cluster-c1
+        image: dikapriska/redis-ha-cluster:latest
+
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: .2
+          limits:
+            memory: "200Mi"
+            cpu: .5
+
+        imagePullPolicy: IfNotPresent
+
+        ports:
+        - containerPort: 6379
+
+        volumeMounts:
+          - mountPath: /mnt/redis-data
+            name: redis-directory-binding
+            readOnly: false

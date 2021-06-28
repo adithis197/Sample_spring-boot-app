@@ -12,17 +12,20 @@ public class Courses implements Serializable {
     public String toString() {
         return "Courses{" +
                 "id=" + id +
+                ", duration='" + duration + '\'' +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 '}';
     }
 
     private long id;
-    private String title;
+    private long duration;
+    private String title; // certain titles caching
     private String description;
 
-    public Courses(long id, String title, String description) {
+    public Courses(long id, long duration, String title, String description) {
         this.id = id;
+        this.duration = duration;
         this.title = title;
         this.description = description;
     }
@@ -53,6 +56,15 @@ public class Courses implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
 
 
 }
