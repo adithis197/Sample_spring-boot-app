@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory. annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +18,6 @@ import java.util.List;
 public class CourseServiceImpl implements CourseService {
     @Autowired
     CacheManager cacheManager;
-
-
     List<Courses> list;
     List<Chat> queueChat;
 
@@ -34,7 +30,7 @@ public class CourseServiceImpl implements CourseService {
         queueChat = new ArrayList<>();
         int j;
         for(j=1;j<=8000;j++){
-            queueChat.add(new Chat("cust",j%20 ,"abc@gmail.com", "TV145", j+20, "Sony-TV","SONY","Display: 46 and Wifi connectivity for browsing", j));
+            queueChat.add(new Chat("cust"+j,j%20 ,"abc@gmail.com", "TV145", j+20, "Sony-TV","SONY","Display: 46 and Wifi connectivity for browsing", j));
         }
 
     }
@@ -48,7 +44,6 @@ public class CourseServiceImpl implements CourseService {
     public Courses getCourse(Long courseId, Long duration) {
         LOG.info("Getting course info for id {}", courseId);
         Courses c = null;
-        //cacheManager.getCache("courses").evict("3,6");
         Collection<String> caches = cacheManager.getCacheNames();
         System.out.println(caches);
         for (Courses course : list) {
@@ -59,7 +54,7 @@ public class CourseServiceImpl implements CourseService {
         }
         return c;
     }
-    @Cacheable(cacheNames = "chats", key = "{#chatId,#agentId,#domain}", condition = "#flag == 0")
+    @Cacheable(cacheNames = "chats", key = "{#chatId,#agentId,#domain}", unless = "#flag == 1")
     @RequestMapping(value = "/{chatId}", method = RequestMethod.GET)
     public Chat getChat(Long chatId, Long agentId, String emailId, String domain, int flag) {
         LOG.info("Getting chat info for chatId - {}, agentId - {} ", chatId,agentId);
@@ -77,5 +72,7 @@ public class CourseServiceImpl implements CourseService {
         list.add(course);
         return course;
     }
+        //cacheManager.getCache("courses").evict("3,6"); this can be used if we want to evict a particular key
+        //cacheManager.getCache("courses").clear(); this will evict all keys
 
 }
