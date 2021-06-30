@@ -10,17 +10,16 @@ This can easily be used to deploy into a large scale kubernetes cluster.
 
 		$ mkdir /mnt/redis-data
 
-- Clone repository
-
-		$ git clone https://github.com/dikapriska/redis-ha-k8s.git redis-failover
-
 - Change to directory redis-failover
 
-		$ cd redis-failover
+		$ cd this-folder
 
 - Execute command create.sh
 
 		$ ./create.sh
+		$ ./apply.sh
+		$ kubectl exec -it redis-cluster-master-0 sh
+		# redis-cli
 
-- Done.
+
 
