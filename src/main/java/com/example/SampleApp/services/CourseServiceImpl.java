@@ -5,11 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory. annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import redis.clients.jedis.JedisShardInfo;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,24 +42,24 @@ public class CourseServiceImpl implements CourseService {
     public List<Courses> getCourses() {
         return list;
     }
-    @Cacheable(value = "courses", key = "{#courseId,#duration}")
+    @Cacheable(value = "courses", key = "{#courseId}")
     @RequestMapping(value = "/{courseId}", method = RequestMethod.GET)
-    public Courses getCourse(Long courseId, Long duration) {
+    public Courses getCourse(Long courseId) {
         LOG.info("Getting course info for id {}", courseId);
         Courses c = null;
         Collection<String> caches = cacheManager.getCacheNames();
         System.out.println(caches);
         for (Courses course : list) {
-            if (course.getId() == courseId && course.getDuration() == duration) {
+            if (course.getId() == courseId) {
                 c = course;
                 break;
             }
         }
         return c;
     }
-    @Cacheable(cacheNames = "chats", key = "{#chatId,#agentId,#domain}", unless = "#flag == 1")
+    @Cacheable(cacheNames = "chats", key = "{#chatId,#agentId,#domain}", condition = "#check == 1" )
     @RequestMapping(value = "/{chatId}", method = RequestMethod.GET)
-    public Chat getChat(Long chatId, Long agentId, String emailId, String domain, int flag) {
+    public Chat getChat(Long chatId, Long agentId, String emailId, String domain, int check) {
         LOG.info("Getting chat info for chatId - {}, agentId - {} ", chatId,agentId);
         Chat c = null;
         for (Chat chat : queueChat) {
@@ -67,6 +70,24 @@ public class CourseServiceImpl implements CourseService {
         }
         return c;
     }
+
+    @CachePut(cacheNames = "chats", key = "{#chatId,#agentId,#domain}", unless = "#cond == 0")
+    @RequestMapping(value = "/{chatId}", method = RequestMethod.PATCH)
+    public Chat updateChat(Long chatId, Long agentId, String emailId, String domain, int cond, String productName){
+        LOG.info("Updating chat info for chatId - {}, agentId - {} ", chatId,agentId);
+        Chat c = null;
+        for (Chat chat : queueChat) {
+            if (chat.getChatId() == chatId && chat.getAgentId() == agentId) {
+                chat.setProductName(productName);
+                c = chat;
+                break;
+            }
+        }
+        return c;
+    }
+
+
+
     @Override
     public Courses addCourse(Courses course) {
         list.add(course);
