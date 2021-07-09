@@ -4,10 +4,7 @@ import com.example.SampleApp.entities.Courses;
 import com.example.SampleApp.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisShardInfo;
-import redis.clients.jedis.ShardedJedis;
+import redis.clients.jedis.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,18 +26,19 @@ public class MyController {
         return this.courseService.getCourses();
 
     }
-    @GetMapping("/courses/{courseId}")
-    public Courses getCourse(@PathVariable String courseId){
-        return  this.courseService.getCourse(Long.parseLong(courseId));
-    }
     private static JedisPool jedisPool;
     static {
         try {
-            jedisPool = new JedisPool(new URI("http://" + "localhost" + ":" + 6379));
+            jedisPool = new JedisPool(new URI("http://" + "127.0.0.1" + ":" + 7000));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
+    @GetMapping("/courses/{courseId}")
+    public Courses getCourse(@PathVariable String courseId){
+        return  this.courseService.getCourse(Long.parseLong(courseId));
+    }
+
 
 
     public Set keys() {
@@ -48,7 +46,6 @@ public class MyController {
             return jedis.keys("*");
         }
     }
-    //ShardedJedis jedis = new ShardedJedis(shards, ShardedJedis.DEFAULT_KEY_TAG_PATTERN);
 
 
     public int checkIfCached(String key){
@@ -86,21 +83,25 @@ public class MyController {
 
     @GetMapping("/chat/{chatId}/{agentId}/{emailId}")
     public Chat getChat(@PathVariable String chatId, @PathVariable String agentId, @PathVariable String emailId){
+        Jedis jedis = jedisPool.getResource();
         String domain = getDomain(emailId);
-        int flag = checkIfDomainExists(domain)? 1:0;
+        //jedis.set("chats::"+chatId+","+agentId+"{"+domain+"}","this is the value");
+        //int flag = checkIfDomainExists(domain)? 1:0;
         int check = checkDomain(domain);
+        domain = "{"+domain+"}";
         return  this.chatService.getChat(Long.parseLong(chatId),Long.parseLong(agentId), emailId, domain, check);
     }
 
     @PatchMapping("/chat/{chatId}/{agentId}/{emailId}/{productName}")  // where productName is to be updated for the key composed of the other three attributes
     public Chat updateChat(@PathVariable String chatId, @PathVariable String agentId, @PathVariable String emailId, @PathVariable String productName){
         String domain = getDomain(emailId);
-        int flag = checkIfDomainExists(domain)? 1:0;
+        int flag = checkDomain(domain);
         int cond1 = 1;
-        int cond = checkIfCached("chats::"+chatId+","+agentId+","+domain);
-        if(flag == 1 && cond == 0){
+        domain = "{"+domain+"}";
+        //int cond = checkIfCached("chats::"+chatId+","+agentId+","+domain);
+        /*if(flag == 1 && cond == 0){
             cond1 = 0;
-        }
+        }*/
         return  this.chatService.updateChat(Long.parseLong(chatId),Long.parseLong(agentId), emailId, domain, cond1, productName);
     }
 

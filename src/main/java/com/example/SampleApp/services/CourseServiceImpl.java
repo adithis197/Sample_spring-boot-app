@@ -57,7 +57,7 @@ public class CourseServiceImpl implements CourseService {
         }
         return c;
     }
-    @Cacheable(cacheNames = "chats", key = "{#chatId,#agentId,#domain}", condition = "#check == 1" )
+    @Cacheable(cacheNames = "chats", key = "{#chatId,#agentId,#domain}", condition = "#check == 1")
     @RequestMapping(value = "/{chatId}", method = RequestMethod.GET)
     public Chat getChat(Long chatId, Long agentId, String emailId, String domain, int check) {
         LOG.info("Getting chat info for chatId - {}, agentId - {} ", chatId,agentId);
@@ -71,7 +71,7 @@ public class CourseServiceImpl implements CourseService {
         return c;
     }
 
-    @CachePut(cacheNames = "chats", key = "{#chatId,#agentId,#domain}", unless = "#cond == 0")
+    @CachePut(cacheNames = "chats", key = "{#chatId,#agentId,#domain}")
     @RequestMapping(value = "/{chatId}", method = RequestMethod.PATCH)
     public Chat updateChat(Long chatId, Long agentId, String emailId, String domain, int cond, String productName){
         LOG.info("Updating chat info for chatId - {}, agentId - {} ", chatId,agentId);
